@@ -77,10 +77,12 @@
           adminEmailElement.textContent = userInfo.email;
         }
       }
-    } 
-    
-    if (visibility.analyticsContent) {
+    }    if (visibility.analyticsContent) {
       loadAnalyticsData();
+    }
+    
+    if (visibility.adminAndUserView) {
+      // Any special handling for adminAndUserView content can go here
     }
     
     if (visibility.userContent) {

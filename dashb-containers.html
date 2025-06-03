@@ -1,18 +1,34 @@
-    <!-- 
+<!-- 
     How to Add New Content Containers?
 
     1. Update getContentVisibility() in backend.js to include the new container
     2. Update handleContentVisibility() in frontend-js.html to handle the new container
     -->
 
-    
+    <!-- Admin and User View (Can be viewed by both user and admin)-->
+    <div id="adminAndUserView" class="container mt-5" style="display: none;">
+    <div class="row">
+        <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+            <h4 class="mb-0">Admin and User Container </h4>
+            </div>
+            <div class="card-body">
+            <h3>Both Admin and User can See</h3>
+            </div>
+        </div>
+        </div>
+    </div>
+    </div>
+  
+
     <!-- Admin Content -->
     <div id="adminContent" class="container mt-5" style="display: none;">
     <div class="row">
         <div class="col-12">
         <div class="card">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Admin Dashboard</h4>
+            <h4 class="mb-0">Admin Container Only</h4>
             <span id="adminEmail" class="badge bg-light text-dark"></span>
             </div>
             <div class="card-body">
@@ -52,13 +68,12 @@
         <div class="col-12">
         <div class="card">
             <div class="card-header bg-success text-white">
-            <h4 class="mb-0">User Dashboard</h4>
+            <h4 class="mb-0">User Container Only</h4>
             </div>
             <div class="card-body">
             <h2>Welcome, User</h2>
-            <p class="lead">You are logged in as <span id="userEmail"></span></p>
-            <div class="alert alert-info">
-                This is the user view of the Globe QTR system. You have access to user-level features.
+            <p class="lead">You are logged in as <span id="userEmail"></span></p>            <div class="alert alert-info">
+                This is the user view of the Globe Authentication Template. You have access to user-level features.
             </div>
             </div>
         </div>
@@ -91,19 +106,17 @@
     <div id="analyticsContent" class="container mt-5" style="display: none;">
     <div class="row">
         <div class="col-12">
-        <div class="card">
-            <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">QTR Analytics Dashboard</h4>
+        <div class="card">            <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Analytics Dashboard (Custom Container)</h4>
             </div>
             <div class="card-body">
-            <h2>Performance Analytics</h2>
+            <h3>Both Admin and User can see</h3>
             </div>
             </div>
         </div>
-        </div>
+        </div>    </div>
     </div>
-    </div>
-  
+
   
 <script>
 

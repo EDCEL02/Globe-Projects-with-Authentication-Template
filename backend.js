@@ -1,7 +1,7 @@
 function doGet(e) {
-  var output = HtmlService.createTemplateFromFile('index')
+  var output = HtmlService.createTemplateFromFile('main')
     .evaluate()
-    .setTitle('Globe QTR')
+    .setTitle('Globe Authentication Template')
     .setFaviconUrl('https://raw.githubusercontent.com/Azurenian/DSCS/refs/heads/main/globe-logo.png')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 
@@ -47,28 +47,28 @@ function getUserAuthStatus() {
  * @return {Object} Object containing container IDs and visibility status
  */
 function getContentVisibility() {
-  var authStatus = getUserAuthStatus();
-  
-  // Create the base visibility object
+  var authStatus = getUserAuthStatus();  // Create the base visibility object
   var visibility = {
     setupContainer: false,
     adminContent: false,
     userContent: false,
     unauthorizedContent: false,
-    analyticsContent: false // Add the new container
+    analyticsContent: false, // Add the new container
+    adminAndUserView: false // View accessible to both admin and users
   };
   
   // Determine which container should be visible
   if (!authStatus.isSetupComplete) {
     visibility.setupContainer = true;
   } else if (!authStatus.isAuthenticated) {
-    visibility.unauthorizedContent = true;
-  } else if (authStatus.isAdmin) {
+    visibility.unauthorizedContent = true;  } else if (authStatus.isAdmin) {
     visibility.adminContent = true;
     visibility.analyticsContent = true; // Show analytics to admin
+    visibility.adminAndUserView = true; // Show adminAndUserView to admin
   } else {
     visibility.userContent = true;
     visibility.analyticsContent = true; // Show analytics to authorized users too
+    visibility.adminAndUserView = true; // Show adminAndUserView to authorized users
   }
   
   return {

@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
+<html lang="en">  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Globe QTR</title>
+    <title>Globe Authentication Template</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
       rel="stylesheet"
-    />    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js for analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
     <?!= include('appstyles'); ?>
@@ -16,10 +15,9 @@
     <!-- App Header -->
     <header class="bg-dark text-white py-3 mb-3">
       <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
-          <h1 class="h4 mb-0">
+        <div class="d-flex justify-content-between align-items-center">          <h1 class="h4 mb-0">
             <img src="https://raw.githubusercontent.com/Azurenian/DSCS/refs/heads/main/globe-logo.png" alt="Globe Logo" height="30" class="me-2">
-            Globe QTR System
+            Globe Authentication Template
           </h1>
           <div id="userInfoDisplay" style="display:none;">
             <span id="currentUserEmail" class="me-2"></span>
@@ -30,16 +28,16 @@
     </header>
     
     <!-- Initial Setup (Hidden with properties are set)-->
-    <?!= include('dashb-initialSetup'); ?>
+    <?!= include('dashb-initialization'); ?>
 
     <!-- Main Content Area -->
-    <?!= include('dashb-containers'); ?>
+    <?!= include('dashb-containers'); ?> 
 
 
    <!-- Bootstrap and Custom Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-
     <?!= include('frontend-js'); ?>
+    <?!= include('frontend-initialization-js'); ?>
   </body>
 </html>
