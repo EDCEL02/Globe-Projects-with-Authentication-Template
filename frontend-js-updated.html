@@ -1,0 +1,249 @@
+<!-- Updated frontend JavaScript for showing the appropriate content containers -->
+<script>
+  // Initialize the application when the page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if setup is complete and authenticate user
+    initializeApp();
+    
+    // Setup form submission handler
+    document.getElementById('setupForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      submitSetupForm();
+    });
+  });
+
+  // Initialize the app based on authentication state
+  function initializeApp() {
+    // Show loading state
+    showLoading(true);
+    
+    // Call server-side function to get content visibility
+    google.script.run
+      .withSuccessHandler(handleContentVisibility)
+      .withFailureHandler(handleError)
+      .showContent();
+  }
+  
+  // Handle content visibility response
+  function handleContentVisibility(response) {
+    // Hide loading state
+    showLoading(false);
+    
+    const visibility = response.visibility;
+    const userInfo = response.userInfo;
+    
+    // Update user info in header if available
+    if (userInfo.email) {
+      const userInfoDisplay = document.getElementById('userInfoDisplay');
+      if (userInfoDisplay) {
+        userInfoDisplay.style.display = 'block';
+        
+        const currentUserEmail = document.getElementById('currentUserEmail');
+        if (currentUserEmail) {
+          currentUserEmail.textContent = userInfo.email;
+        }
+        
+        // Set user role badge
+        const roleElement = document.getElementById('userRole');
+        if (roleElement) {
+          if (userInfo.isAdmin) {
+            roleElement.textContent = 'Admin';
+            roleElement.className = 'badge bg-danger';
+          } else if (userInfo.isAuthenticated) {
+            roleElement.textContent = 'User';
+            roleElement.className = 'badge bg-success';
+          } else {
+            roleElement.textContent = 'Unauthorized';
+            roleElement.className = 'badge bg-secondary';
+          }
+        }
+      }
+    }
+    
+    // Show appropriate content based on visibility response
+    for (const [container, isVisible] of Object.entries(visibility)) {
+      const element = document.getElementById(container);
+      if (element) {
+        element.style.display = isVisible ? 'block' : 'none';
+      }
+    }
+    
+    // Load additional data based on which container is visible
+    if (visibility.adminContent) {
+      loadAdminData();
+      if (userInfo.email) {
+        const adminEmailElement = document.getElementById('adminEmail');
+        if (adminEmailElement) {
+          adminEmailElement.textContent = userInfo.email;
+        }
+      }
+    } else if (visibility.userContent) {
+      loadUserData();
+      if (userInfo.email) {
+        const userEmailElement = document.getElementById('userEmail');
+        if (userEmailElement) {
+          userEmailElement.textContent = userInfo.email;
+        }
+      }
+    } else if (visibility.unauthorizedContent && userInfo.email) {
+      const unauthorizedEmailElement = document.getElementById('unauthorizedEmail');
+      if (unauthorizedEmailElement) {
+        unauthorizedEmailElement.textContent = userInfo.email;
+      }
+    }
+  }
+  
+  // Handle form submission for initial setup
+  function submitSetupForm() {
+    const adminEmail = document.getElementById('adminEmail').value.trim();
+    const authorizedUsers = document.getElementById('authorizedUsers').value.trim();
+    const sheetsLink = document.getElementById('sheetsLink').value.trim();
+    
+    if (!adminEmail || !authorizedUsers || !sheetsLink) {
+      showSetupMessage('Please fill in all required fields.', 'error');
+      return;
+    }
+    
+    // Show loading state
+    showLoading(true);
+    
+    // Call server-side function to perform setup
+    google.script.run
+      .withSuccessHandler(handleSetupResult)
+      .withFailureHandler(handleSetupError)
+      .performInitialSetup(adminEmail, authorizedUsers, sheetsLink);
+  }
+  
+  // Handle setup result
+  function handleSetupResult(result) {
+    showLoading(false);
+    
+    if (result.success) {
+      showSetupMessage(result.message, 'success');
+      // Reload the app after successful setup
+      setTimeout(function() {
+        window.location.reload();
+      }, 2000);
+    } else {
+      showSetupMessage(result.message, 'error');
+    }
+  }
+  
+  // Handle setup error
+  function handleSetupError(error) {
+    showLoading(false);
+    showSetupMessage('Error: ' + error.message, 'error');
+  }
+  
+  // Show setup form message
+  function showSetupMessage(message, type) {
+    const messageElement = document.getElementById('setupMessage');
+    if (messageElement) {
+      messageElement.textContent = message;
+      messageElement.className = 'alert mt-3';
+      
+      if (type === 'success') {
+        messageElement.classList.add('alert-success');
+      } else {
+        messageElement.classList.add('alert-danger');
+      }
+      
+      messageElement.style.display = 'block';
+    }
+  }
+  
+  // Handle general error
+  function handleError(error) {
+    console.error('Error:', error);
+    showLoading(false);
+    alert('An error occurred: ' + (error.message || 'Unknown error'));
+  }
+  
+  // Load admin data
+  function loadAdminData() {
+    google.script.run
+      .withSuccessHandler(displayAdminData)
+      .withFailureHandler(handleError)
+      .loadAdminContentData();
+  }
+  
+  // Load user data
+  function loadUserData() {
+    google.script.run
+      .withSuccessHandler(displayUserData)
+      .withFailureHandler(handleError)
+      .loadUserContentData();
+  }
+    // Display admin data
+  function displayAdminData(response) {
+    if (!response.success) {
+      alert(response.message);
+      return;
+    }
+    
+    const content = response.content;
+    
+    // Update admin properties in the UI
+    const adminEmailValue = document.getElementById('adminEmailValue');
+    if (adminEmailValue) {
+      adminEmailValue.textContent = content.properties.adminEmail || 'Not set';
+    }
+    
+    const authorizedUsersValue = document.getElementById('authorizedUsersValue');
+    if (authorizedUsersValue) {
+      authorizedUsersValue.textContent = content.properties.authorizedUsers || 'Not set';
+    }
+    
+    const sheetsLinkValue = document.getElementById('sheetsLinkValue');
+    if (sheetsLinkValue) {
+      sheetsLinkValue.textContent = content.properties.sheetsLink || 'Not set';
+    }
+    
+    const setupDateValue = document.getElementById('setupDateValue');
+    if (setupDateValue) {
+      // Format setup date for display
+      let setupDate = 'Not set';
+      if (content.properties.setupDate) {
+        try {
+          setupDate = new Date(content.properties.setupDate).toLocaleString();
+        } catch (e) {
+          setupDate = content.properties.setupDate;
+        }
+      }
+      setupDateValue.textContent = setupDate;
+    }
+    
+    // Additional elements can be updated here as needed
+    // For example:
+    // document.getElementById('someStat').textContent = content.stats.someValue;
+  }
+  
+  // Display user data
+  function displayUserData(response) {
+    if (!response.success) {
+      alert(response.message);
+      return;
+    }
+    
+    const content = response.content;
+    
+    // Any user-specific content updates can be done here
+    // For example:
+    // document.getElementById('userStat').textContent = content.someUserData;
+  }
+  
+  // Show or hide loading state
+  function showLoading(isLoading) {
+    // Control loading indicator visibility
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    if (loadingIndicator) {
+      loadingIndicator.style.display = isLoading ? 'block' : 'none';
+    }
+    
+    // Disable buttons while loading
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+      button.disabled = isLoading;
+    });
+  }
+</script>
