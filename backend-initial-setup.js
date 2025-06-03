@@ -67,6 +67,7 @@ function getUserAuthStatus() {
   };
 }
 
+
 // Get script properties for admin view
 function getScriptProperties() {
   var userStatus = getUserAuthStatus();
