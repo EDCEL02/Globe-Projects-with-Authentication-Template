@@ -68,8 +68,7 @@
         element.style.display = isVisible ? 'block' : 'none';
       }
     }
-    
-    // Load additional data based on which container is visible
+      // Load additional data based on which container is visible
     if (visibility.adminContent) {
       loadAdminData();
       if (userInfo.email) {
@@ -78,7 +77,13 @@
           adminEmailElement.textContent = userInfo.email;
         }
       }
-    } else if (visibility.userContent) {
+    } 
+    
+    if (visibility.analyticsContent) {
+      loadAnalyticsData();
+    }
+    
+    if (visibility.userContent) {
       loadUserData();
       if (userInfo.email) {
         const userEmailElement = document.getElementById('userEmail');
@@ -175,7 +180,16 @@
       .withFailureHandler(handleError)
       .loadUserContentData();
   }
-    // Display admin data
+  
+  // Load analytics data
+  function loadAnalyticsData() {
+    google.script.run
+      .withSuccessHandler(displayAnalyticsData)
+      .withFailureHandler(handleError)
+      .loadAnalyticsData();
+  }
+  
+  // Display admin data
   function displayAdminData(response) {
     if (!response.success) {
       alert(response.message);
@@ -231,6 +245,58 @@
     // Any user-specific content updates can be done here
     // For example:
     // document.getElementById('userStat').textContent = content.someUserData;
+  }
+  
+  // Display analytics data
+  function displayAnalyticsData(response) {
+    if (!response.success) {
+      alert(response.message || "Failed to load analytics data");
+      return;
+    }
+    
+    const data = response.data;
+    
+    // Update analytics metrics
+    const totalReportsElement = document.getElementById('totalReportsCount');
+    if (totalReportsElement) {
+      totalReportsElement.textContent = data.totalReports;
+    }
+    
+    const currentQuarterElement = document.getElementById('currentQuarterMetric');
+    if (currentQuarterElement) {
+      currentQuarterElement.textContent = data.currentQuarter;
+    }
+    
+    const userEngagementElement = document.getElementById('userEngagementMetric');
+    if (userEngagementElement) {
+      userEngagementElement.textContent = data.userEngagement + '%';
+    }
+    
+    // If you want to add a chart, you would initialize it here
+    const chartContainer = document.getElementById('analyticsChart');
+    if (chartContainer && typeof Chart !== 'undefined') {
+      // Using Chart.js - you would need to include this library in your HTML
+      new Chart(chartContainer, {
+        type: 'bar',
+        data: {
+          labels: data.quarterlyTrends.map(item => item.quarter),
+          datasets: [{
+            label: 'Reports',
+            data: data.quarterlyTrends.map(item => item.value),
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgb(54, 162, 235)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
   }
   
   // Show or hide loading state

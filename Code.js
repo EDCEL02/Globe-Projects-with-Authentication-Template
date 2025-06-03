@@ -58,7 +58,18 @@ function shouldShowContainer(containerType) {
       return contentVisibility.visibility.setupContainer;
     case 'unauthorized':
       return contentVisibility.visibility.unauthorizedContent;
+    case 'analytics':
+      return contentVisibility.visibility.analyticsContent;
     default:
       return false;
   }
+}
+
+/**
+ * Loads analytics data for the analytics container
+ * This function is called from the frontend when analytics content is loaded
+ * @return {Object} Analytics data
+ */
+function loadAnalyticsData() {
+  return getAnalyticsData();
 }

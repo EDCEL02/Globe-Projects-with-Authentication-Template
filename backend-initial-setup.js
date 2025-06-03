@@ -102,7 +102,8 @@ function getContentVisibility() {
     setupContainer: false,
     adminContent: false,
     userContent: false,
-    unauthorizedContent: false
+    unauthorizedContent: false,
+    analyticsContent: false // Add the new container
   };
   
   // Determine which container should be visible
@@ -112,8 +113,10 @@ function getContentVisibility() {
     visibility.unauthorizedContent = true;
   } else if (authStatus.isAdmin) {
     visibility.adminContent = true;
+    visibility.analyticsContent = true; // Show analytics to admin
   } else {
     visibility.userContent = true;
+    visibility.analyticsContent = true; // Show analytics to authorized users too
   }
   
   return {
@@ -180,6 +183,45 @@ function getUserContent() {
       // Add more user-specific content here
     }
   };
+}
+
+/**
+ * Get analytics data for the analytics container
+ * This function loads data for the analytics dashboard
+ * @return {Object} Analytics data and status
+ */
+function getAnalyticsData() {
+  var userStatus = getUserAuthStatus();
+  
+  if (!userStatus.isAuthenticated) {
+    return { success: false, message: "Unauthorized access" };
+  }
+  
+  try {
+    // In a real application, you would fetch this data from your Google Sheet
+    // This is mock data for demonstration purposes
+    const analyticsData = {
+      totalReports: 157,
+      currentQuarter: 42,
+      userEngagement: 78,
+      quarterlyTrends: [
+        { quarter: "Q1", value: 35 },
+        { quarter: "Q2", value: 42 },
+        { quarter: "Q3", value: 28 },
+        { quarter: "Q4", value: 52 }
+      ]
+    };
+    
+    return {
+      success: true,
+      data: analyticsData
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Failed to load analytics data: " + error.message
+    };
+  }
 }
 
 /**

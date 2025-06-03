@@ -1,4 +1,3 @@
-
 <!-- Loading Indicator -->
 <div id="loadingIndicator" class="text-center" style="display:none;">
     <div class="spinner-border text-primary" role="status">
@@ -123,6 +122,65 @@
             <h3>Unauthorized Access</h3>
             <p class="lead">Your email <span id="unauthorizedEmail"></span> is not authorized to access this application.</p>
             <p>Please contact the administrator for access.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Analytics Content -->
+<div id="analyticsContent" class="container mt-5" style="display: none;">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">QTR Analytics Dashboard</h4>
+        </div>
+        <div class="card-body">
+          <h2>Performance Analytics</h2>
+          <p class="lead">View detailed analytics and insights from your QTR data</p>
+          
+          <div class="row mt-4">
+            <div class="col-md-4 mb-3">
+              <div class="card bg-light">
+                <div class="card-body text-center">
+                  <h5 class="card-title">Total Reports</h5>
+                  <h2 class="display-4" id="totalReportsCount">0</h2>
+                  <p class="text-muted">All-time reports generated</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+              <div class="card bg-light">
+                <div class="card-body text-center">
+                  <h5 class="card-title">Current Quarter</h5>
+                  <h2 class="display-4" id="currentQuarterMetric">0</h2>
+                  <p class="text-muted">Reports this quarter</p>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+              <div class="card bg-light">
+                <div class="card-body text-center">
+                  <h5 class="card-title">User Engagement</h5>
+                  <h2 class="display-4" id="userEngagementMetric">0%</h2>
+                  <p class="text-muted">User activity rate</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-5">
+            <h4>Quarterly Trends</h4>
+            <div class="chart-container" style="height: 300px; width: 100%;">
+              <canvas id="analyticsChart"></canvas>
+            </div>
+            <div class="text-center mt-3 text-muted">
+              <small>Data is updated daily</small>
+            </div>
           </div>
         </div>
       </div>

@@ -29,8 +29,7 @@
   .form-label {
     font-weight: 500;
   }
-  
-  #setupContainer, #adminContent, #userContent, #unauthorizedContent {
+    #setupContainer, #adminContent, #userContent, #unauthorizedContent, #analyticsContent {
     opacity: 0;
     animation: fadeIn 0.5s ease-in forwards;
   }
@@ -38,5 +37,22 @@
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
+  }
+  
+  /* Analytics specific styles */
+  .chart-container {
+    position: relative;
+    margin: auto;
+    height: 300px;
+    width: 100%;
+  }
+  
+  #analyticsContent .card-body {
+    padding: 1.5rem;
+  }
+  
+  #analyticsContent .display-4 {
+    font-weight: 500;
+    color: #0d6efd;
   }
 </style>

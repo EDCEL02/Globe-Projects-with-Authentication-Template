@@ -46,6 +46,12 @@ The core of the system relies on conditional display of HTML containers based on
 │ unauthorizedContent │ ← Shown to unauthorized users
 │                 │
 └─────────────────┘
+
+┌─────────────────┐
+│                 │
+│ analyticsContent │ ← Shown to both admin and authorized users
+│                 │
+└─────────────────┘
 ```
 
 ## Technical Implementation
@@ -68,6 +74,8 @@ The core of the system relies on conditional display of HTML containers based on
    - `showContent()`: Main function called from frontend to determine what to display
    - `loadAdminContentData()`: Loads admin dashboard data
    - `loadUserContentData()`: Loads user dashboard data
+   - `loadAnalyticsData()`: Loads analytics dashboard data
+   - `getAnalyticsData()`: Backend function that retrieves analytics metrics
 
 ### Frontend Components (`frontend-js-updated.html`)
 
@@ -90,6 +98,7 @@ Contains all the main content containers:
 - `adminContent`: Admin dashboard
 - `userContent`: User dashboard
 - `unauthorizedContent`: Access denied message
+- `analyticsContent`: Analytics dashboard (shown to both admins and users)
 
 ### Styling (`appstyles.html`)
 - Bootstrap-based responsive design
@@ -116,6 +125,67 @@ Contains all the main content containers:
 1. Add a new HTML container to `dashb-initial-setup.html`
 2. Update `getContentVisibility()` in `backend-initial-setup.js` to include the new container
 3. Update `handleContentVisibility()` in `frontend-js-updated.html` to handle the new container
+
+#### Example: Adding a New Content Container
+
+Here's an example of adding an analytics dashboard container that's visible to both admins and users:
+
+**Step 1:** Add the container HTML to `dashb-initial-setup.html`:
+```html
+<div id="analyticsContent" class="container mt-5" style="display: none;">
+  <div class="card">
+    <div class="card-header bg-primary text-white">
+      <h4 class="mb-0">Analytics Dashboard</h4>
+    </div>
+    <div class="card-body">
+      <!-- Content goes here -->
+    </div>
+  </div>
+</div>
+```
+
+**Step 2:** Update visibility settings in `backend-initial-setup.js`:
+```javascript
+var visibility = {
+  setupContainer: false,
+  adminContent: false,
+  userContent: false,
+  unauthorizedContent: false,
+  analyticsContent: false // Add the new container
+};
+
+// Later in the code:
+if (authStatus.isAdmin) {
+  visibility.adminContent = true;
+  visibility.analyticsContent = true; // Show to admin
+} else if (authStatus.isAuthenticated) {
+  visibility.userContent = true;
+  visibility.analyticsContent = true; // Show to users
+}
+```
+
+**Step 3:** Add loading logic in `frontend-js-updated.html`:
+```javascript
+// Add a function to load data for the container
+function loadAnalyticsData() {
+  google.script.run
+    .withSuccessHandler(displayAnalyticsData)
+    .withFailureHandler(handleError)
+    .loadAnalyticsData();
+}
+
+// Handle the content visibility
+if (visibility.analyticsContent) {
+  loadAnalyticsData();
+}
+```
+
+**Step 4:** Create backend function in `Code.js`:
+```javascript
+function loadAnalyticsData() {
+  return getAnalyticsData();
+}
+```
 
 ### Adding User-Specific Features
 1. Enhance `getUserContent()` in backend to include new data
