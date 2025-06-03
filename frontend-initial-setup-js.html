@@ -1,0 +1,181 @@
+<script>
+  // Initialize the application when the page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    // Hide the default welcome message
+    document.querySelector('h1').style.display = 'none';
+    
+    // Check if setup is complete and authenticate user
+    initializeApp();
+    
+    // Setup form submission handler
+    document.getElementById('setupForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      submitSetupForm();
+    });
+  });
+
+  // Initialize the app based on authentication state
+  function initializeApp() {
+    // Show loading state
+    showLoading(true);
+    
+    // Call server-side function to check authentication status
+    google.script.run
+      .withSuccessHandler(handleAuthStatus)
+      .withFailureHandler(handleError)
+      .getUserAuthStatus();
+  }
+    // Handle authentication status response
+  function handleAuthStatus(status) {
+    // Hide loading state
+    showLoading(false);
+    
+    // Update user info in header if available
+    if (status.userEmail) {
+      document.getElementById('userInfoDisplay').style.display = 'block';
+      document.getElementById('currentUserEmail').textContent = status.userEmail;
+      
+      // Set user role badge
+      const roleElement = document.getElementById('userRole');
+      if (status.isAdmin) {
+        roleElement.textContent = 'Admin';
+        roleElement.className = 'badge bg-danger';
+      } else if (status.isAuthenticated) {
+        roleElement.textContent = 'User';
+        roleElement.className = 'badge bg-success';
+      } else {
+        roleElement.textContent = 'Unauthorized';
+        roleElement.className = 'badge bg-secondary';
+      }
+    }
+    
+    // Show appropriate content based on authentication state
+    if (!status.isSetupComplete) {
+      // Show setup form if setup is not complete
+      document.getElementById('setupContainer').style.display = 'block';
+    } else if (!status.isAuthenticated) {
+      // Show unauthorized message if user is not authenticated
+      document.getElementById('unauthorizedContent').style.display = 'block';
+      document.getElementById('unauthorizedEmail').textContent = status.userEmail || 'Unknown';
+    } else if (status.isAdmin) {
+      // Show admin content and load admin data
+      document.getElementById('adminContent').style.display = 'block';
+      document.getElementById('adminEmail').textContent = status.userEmail;
+      loadAdminData();
+    } else {
+      // Show user content
+      document.getElementById('userContent').style.display = 'block';
+      document.getElementById('userEmail').textContent = status.userEmail;
+    }
+  }
+  
+  // Handle form submission for initial setup
+  function submitSetupForm() {
+    const adminEmail = document.getElementById('adminEmail').value.trim();
+    const authorizedUsers = document.getElementById('authorizedUsers').value.trim();
+    const sheetsLink = document.getElementById('sheetsLink').value.trim();
+    
+    if (!adminEmail || !authorizedUsers || !sheetsLink) {
+      showSetupMessage('Please fill in all required fields.', 'error');
+      return;
+    }
+    
+    // Show loading state
+    showLoading(true);
+    
+    // Call server-side function to perform setup
+    google.script.run
+      .withSuccessHandler(handleSetupResult)
+      .withFailureHandler(handleSetupError)
+      .performInitialSetup(adminEmail, authorizedUsers, sheetsLink);
+  }
+  
+  // Handle setup result
+  function handleSetupResult(result) {
+    showLoading(false);
+    
+    if (result.success) {
+      showSetupMessage(result.message, 'success');
+      // Reload the app after successful setup
+      setTimeout(function() {
+        window.location.reload();
+      }, 2000);
+    } else {
+      showSetupMessage(result.message, 'error');
+    }
+  }
+  
+  // Handle setup error
+  function handleSetupError(error) {
+    showLoading(false);
+    showSetupMessage('Error: ' + error.message, 'error');
+  }
+  
+  // Show setup form message
+  function showSetupMessage(message, type) {
+    const messageElement = document.getElementById('setupMessage');
+    messageElement.textContent = message;
+    messageElement.className = 'alert mt-3';
+    
+    if (type === 'success') {
+      messageElement.classList.add('alert-success');
+    } else {
+      messageElement.classList.add('alert-danger');
+    }
+    
+    messageElement.style.display = 'block';
+  }
+  
+  // Handle general error
+  function handleError(error) {
+    console.error('Error:', error);
+    showLoading(false);
+    alert('An error occurred: ' + error.message);
+  }
+  
+  // Load admin data
+  function loadAdminData() {
+    google.script.run
+      .withSuccessHandler(displayAdminData)
+      .withFailureHandler(handleError)
+      .getScriptProperties();
+  }
+  
+  // Display admin data
+  function displayAdminData(response) {
+    if (!response.success) {
+      alert(response.message);
+      return;
+    }
+    
+    const props = response.properties;
+    document.getElementById('adminEmailValue').textContent = props.adminEmail || 'Not set';
+    document.getElementById('authorizedUsersValue').textContent = props.authorizedUsers || 'Not set';
+    document.getElementById('sheetsLinkValue').textContent = props.sheetsLink || 'Not set';
+    
+    // Format setup date for display
+    let setupDate = 'Not set';
+    if (props.setupDate) {
+      try {
+        setupDate = new Date(props.setupDate).toLocaleString();
+      } catch (e) {
+        setupDate = props.setupDate;
+      }
+    }
+    document.getElementById('setupDateValue').textContent = setupDate;
+  }
+    // Show or hide loading state
+  function showLoading(isLoading) {
+    // Control loading indicator visibility
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    if (loadingIndicator) {
+      loadingIndicator.style.display = isLoading ? 'block' : 'none';
+    }
+    
+    // Disable buttons while loading
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+      button.disabled = isLoading;
+    });
+  }
+</script>

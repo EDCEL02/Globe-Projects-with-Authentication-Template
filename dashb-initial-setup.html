@@ -1,0 +1,116 @@
+<!-- Initial Setup Form -->
+<div id="setupContainer" class="container mt-5" style="display: none;">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Globe QTR Initial Setup</h4>
+        </div>
+        <div class="card-body">
+          <form id="setupForm">
+            <div class="mb-3">
+              <label for="adminEmail" class="form-label">Admin Email</label>
+              <input type="email" class="form-control" id="adminEmail" required>
+              <div class="form-text">This email will have administrative privileges.</div>
+            </div>
+            <div class="mb-3">
+              <label for="authorizedUsers" class="form-label">Authorized User Emails</label>
+              <textarea class="form-control" id="authorizedUsers" rows="3" required></textarea>
+              <div class="form-text">Enter email addresses separated by commas.</div>
+            </div>
+            <div class="mb-3">
+              <label for="sheetsLink" class="form-label">Google Sheets Link</label>
+              <input type="url" class="form-control" id="sheetsLink" required>
+              <div class="form-text">Provide a link to the Google Sheet for data storage.</div>
+            </div>
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-primary">Complete Setup</button>
+            </div>
+            <div id="setupMessage" class="alert mt-3" style="display: none;"></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Content -->
+<div id="adminContent" class="container mt-5" style="display: none;">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h4 class="mb-0">Admin Dashboard</h4>
+          <span id="adminEmail" class="badge bg-light text-dark"></span>
+        </div>
+        <div class="card-body">
+          <h2>Welcome, Admin</h2>
+          <div class="mt-4">
+            <h5>System Settings</h5>
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <th>Admin Email</th>
+                  <td id="adminEmailValue"></td>
+                </tr>
+                <tr>
+                  <th>Authorized Users</th>
+                  <td id="authorizedUsersValue"></td>
+                </tr>
+                <tr>
+                  <th>Google Sheets Link</th>
+                  <td id="sheetsLinkValue"></td>
+                </tr>
+                <tr>
+                  <th>Setup Date</th>
+                  <td id="setupDateValue"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User Content -->
+<div id="userContent" class="container mt-5" style="display: none;">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0">User Dashboard</h4>
+        </div>
+        <div class="card-body">
+          <h2>Welcome, User</h2>
+          <p class="lead">You are logged in as <span id="userEmail"></span></p>
+          <div class="alert alert-info">
+            This is the user view of the Globe QTR system. You have access to user-level features.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Unauthorized Content -->
+<div id="unauthorizedContent" class="container mt-5" style="display: none;">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card border-danger">
+        <div class="card-header bg-danger text-white">
+          <h4 class="mb-0">Access Denied</h4>
+        </div>
+        <div class="card-body">
+          <div class="text-center">
+            <i class="fas fa-exclamation-triangle fa-4x text-danger mb-3"></i>
+            <h3>Unauthorized Access</h3>
+            <p class="lead">Your email <span id="unauthorizedEmail"></span> is not authorized to access this application.</p>
+            <p>Please contact the administrator for access.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
