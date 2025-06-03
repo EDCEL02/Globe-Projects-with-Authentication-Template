@@ -1,4 +1,5 @@
 <script>
+
   // Initialize the application when the page loads
   document.addEventListener('DOMContentLoaded', function() {
     // Hide the default welcome message
@@ -14,6 +15,7 @@
     });
   });
 
+  
   // Initialize the app based on authentication state
   function initializeApp() {
     // Show loading state
@@ -25,7 +27,9 @@
       .withFailureHandler(handleError)
       .getUserAuthStatus();
   }
-    // Handle authentication status response
+
+
+  // Handle authentication status response
   function handleAuthStatus(status) {
     // Hide loading state
     showLoading(false);
@@ -69,6 +73,7 @@
     }
   }
   
+
   // Handle form submission for initial setup
   function submitSetupForm() {
     const adminEmail = document.getElementById('adminEmail').value.trim();
@@ -90,6 +95,7 @@
       .performInitialSetup(adminEmail, authorizedUsers, sheetsLink);
   }
   
+
   // Handle setup result
   function handleSetupResult(result) {
     showLoading(false);
@@ -105,11 +111,13 @@
     }
   }
   
+
   // Handle setup error
   function handleSetupError(error) {
     showLoading(false);
     showSetupMessage('Error: ' + error.message, 'error');
   }
+  
   
   // Show setup form message
   function showSetupMessage(message, type) {
