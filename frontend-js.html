@@ -1,0 +1,124 @@
+<script>
+
+  // Initialize the application when the page loads
+  document.addEventListener('DOMContentLoaded', function() {
+    // Check if setup is complete and authenticate user
+    initializeApp();
+    
+    // Setup form submission handler
+    document.getElementById('setupForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      submitSetupForm();
+    });
+  });
+
+  // Initialize the app based on authentication state
+  function initializeApp() {
+    // Show loading state
+    showLoading(true);
+    
+    // Call server-side function to get content visibility
+    google.script.run
+      .withSuccessHandler(handleContentVisibility)
+      .withFailureHandler(handleError)
+      .showContent();
+  }
+  
+
+  // Handle content visibility response
+  function handleContentVisibility(response) {
+    // Hide loading state
+    showLoading(false);
+    
+    const visibility = response.visibility;
+    const userInfo = response.userInfo;
+    
+    // Update user info in header if available
+    if (userInfo.email) {
+      const userInfoDisplay = document.getElementById('userInfoDisplay');
+      if (userInfoDisplay) {
+        userInfoDisplay.style.display = 'block';
+        
+        const currentUserEmail = document.getElementById('currentUserEmail');
+        if (currentUserEmail) {
+          currentUserEmail.textContent = userInfo.email;
+        }
+        
+        // Set user role badge
+        const roleElement = document.getElementById('userRole');
+        if (roleElement) {
+          if (userInfo.isAdmin) {
+            roleElement.textContent = 'Admin';
+            roleElement.className = 'badge bg-danger';
+          } else if (userInfo.isAuthenticated) {
+            roleElement.textContent = 'User';
+            roleElement.className = 'badge bg-success';
+          } else {
+            roleElement.textContent = 'Unauthorized';
+            roleElement.className = 'badge bg-secondary';
+          }
+        }
+      }
+    }
+    
+    // Show appropriate content based on visibility response
+    for (const [container, isVisible] of Object.entries(visibility)) {
+      const element = document.getElementById(container);
+      if (element) {
+        element.style.display = isVisible ? 'block' : 'none';
+      }
+    }
+      // Load additional data based on which container is visible
+    if (visibility.adminContent) {
+      loadAdminData();
+      if (userInfo.email) {
+        const adminEmailElement = document.getElementById('adminEmail');
+        if (adminEmailElement) {
+          adminEmailElement.textContent = userInfo.email;
+        }
+      }
+    } 
+    
+    if (visibility.analyticsContent) {
+      loadAnalyticsData();
+    }
+    
+    if (visibility.userContent) {
+      loadUserData();
+      if (userInfo.email) {
+        const userEmailElement = document.getElementById('userEmail');
+        if (userEmailElement) {
+          userEmailElement.textContent = userInfo.email;
+        }
+      }
+    } else if (visibility.unauthorizedContent && userInfo.email) {
+      const unauthorizedEmailElement = document.getElementById('unauthorizedEmail');
+      if (unauthorizedEmailElement) {
+        unauthorizedEmailElement.textContent = userInfo.email;
+      }
+    }
+  }
+  
+  // Handle general error
+  function handleError(error) {
+    console.error('Error:', error);
+    showLoading(false);
+    alert('An error occurred: ' + (error.message || 'Unknown error'));
+  }
+  
+  // Show or hide loading state
+  function showLoading(isLoading) {
+    // Control loading indicator visibility
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    if (loadingIndicator) {
+      loadingIndicator.style.display = isLoading ? 'block' : 'none';
+    }
+    
+    // Disable buttons while loading
+    const buttons = document.querySelectorAll('button');
+    buttons.forEach(button => {
+      button.disabled = isLoading;
+    });
+  }
+
+</script>

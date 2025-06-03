@@ -1,0 +1,61 @@
+<script>
+  // Handle form submission for initial setup
+  function submitSetupForm() {
+    const adminEmail = document.getElementById('adminEmail').value.trim();
+    const authorizedUsers = document.getElementById('authorizedUsers').value.trim();
+    const sheetsLink = document.getElementById('sheetsLink').value.trim();
+    
+    if (!adminEmail || !authorizedUsers || !sheetsLink) {
+      showSetupMessage('Please fill in all required fields.', 'error');
+      return;
+    }
+    
+    // Show loading state
+    showLoading(true);
+    
+    // Call server-side function to perform setup
+    google.script.run
+      .withSuccessHandler(handleSetupResult)
+      .withFailureHandler(handleSetupError)
+      .performInitialSetup(adminEmail, authorizedUsers, sheetsLink);
+  }
+
+    // Handle setup result
+  function handleSetupResult(result) {
+    showLoading(false);
+    
+    if (result.success) {
+      showSetupMessage(result.message, 'success');
+      // Reload the app after successful setup
+      setTimeout(function() {
+        window.location.reload();
+      }, 2000);
+    } else {
+      showSetupMessage(result.message, 'error');
+    }
+  }
+  
+  // Handle setup error
+  function handleSetupError(error) {
+    showLoading(false);
+    showSetupMessage('Error: ' + error.message, 'error');
+  }
+  
+  // Show setup form message
+  function showSetupMessage(message, type) {
+    const messageElement = document.getElementById('setupMessage');
+    if (messageElement) {
+      messageElement.textContent = message;
+      messageElement.className = 'alert mt-3';
+      
+      if (type === 'success') {
+        messageElement.classList.add('alert-success');
+      } else {
+        messageElement.classList.add('alert-danger');
+      }
+      
+      messageElement.style.display = 'block';
+    }
+  }
+
+</script>

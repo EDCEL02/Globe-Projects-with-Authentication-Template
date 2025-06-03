@@ -1,46 +1,19 @@
-// Backend functions for initial setup and authentication
+function doGet(e) {
+  var output = HtmlService.createTemplateFromFile('index')
+    .evaluate()
+    .setTitle('Globe QTR')
+    .setFaviconUrl('https://raw.githubusercontent.com/Azurenian/DSCS/refs/heads/main/globe-logo.png')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 
-// Check if initial setup is complete
-function isSetupComplete() {
-  var scriptProperties = PropertiesService.getScriptProperties();
-  return scriptProperties.getProperty('SETUP_DATE') !== null;
+  return output;
 }
 
-// Perform initial setup with provided values
-function performInitialSetup(adminEmail, authorizedUsers, sheetsLink) {
-  try {
-    // Validate inputs
-    if (!adminEmail || !authorizedUsers || !sheetsLink) {
-      return { success: false, message: "All fields are required" };
-    }
-    
-    // Validate email format
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail)) {
-      return { success: false, message: "Invalid admin email format" };
-    }
-    
-    // Validate Google Sheets link
-    try {
-      var spreadsheet = SpreadsheetApp.openByUrl(sheetsLink);
-      if (!spreadsheet) {
-        throw new Error("Invalid spreadsheet URL");
-      }
-    } catch (e) {
-      return { success: false, message: "Invalid Google Sheets URL or insufficient permissions" };
-    }
-    
-    // Create script properties
-    var scriptProperties = PropertiesService.getScriptProperties();
-    scriptProperties.setProperty('ADMIN_EMAIL', adminEmail);
-    scriptProperties.setProperty('AUTHORIZED_USERS', authorizedUsers);
-    scriptProperties.setProperty('GOOGLE_SHEETS_LINK', sheetsLink);
-    scriptProperties.setProperty('SETUP_DATE', new Date().toISOString());
-    
-    return { success: true, message: "Setup completed successfully" };
-  } catch (error) {
-    return { success: false, message: "Setup failed: " + error.message };
-  }
+function include(filename) {
+  return HtmlService.createTemplateFromFile(filename)
+    .evaluate()
+    .getContent();
 }
+
 
 // Get user authentication status and role
 function getUserAuthStatus() {
@@ -67,27 +40,6 @@ function getUserAuthStatus() {
   };
 }
 
-
-// Get script properties for admin view
-function getScriptProperties() {
-  var userStatus = getUserAuthStatus();
-  
-  if (!userStatus.isAuthenticated || !userStatus.isAdmin) {
-    return { success: false, message: "Unauthorized access" };
-  }
-  
-  var scriptProperties = PropertiesService.getScriptProperties();
-  
-  return {
-    success: true,
-    properties: {
-      adminEmail: scriptProperties.getProperty('ADMIN_EMAIL'),
-      authorizedUsers: scriptProperties.getProperty('AUTHORIZED_USERS'),
-      sheetsLink: scriptProperties.getProperty('GOOGLE_SHEETS_LINK'),
-      setupDate: scriptProperties.getProperty('SETUP_DATE')
-    }
-  };
-}
 
 /**
  * Get the appropriate content to show based on user's role and authentication status
@@ -127,6 +79,104 @@ function getContentVisibility() {
       isAuthenticated: authStatus.isAuthenticated || false
     }
   };
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Get script properties for admin view and settings dashboard
+function getScriptProperties() {
+  var userStatus = getUserAuthStatus();
+  
+  if (!userStatus.isAuthenticated || !userStatus.isAdmin) {
+    return { success: false, message: "Unauthorized access" };
+  }
+  
+  var scriptProperties = PropertiesService.getScriptProperties();
+  
+  return {
+    success: true,
+    properties: {
+      adminEmail: scriptProperties.getProperty('ADMIN_EMAIL'),
+      authorizedUsers: scriptProperties.getProperty('AUTHORIZED_USERS'),
+      sheetsLink: scriptProperties.getProperty('GOOGLE_SHEETS_LINK'),
+      setupDate: scriptProperties.getProperty('SETUP_DATE')
+    }
+  };
+}
+
+
+
+/**
+ * Shows the appropriate content container based on user authentication and role
+ * This function is called from the frontend to get visibility settings for containers
+ * @return {Object} Visibility settings for content containers
+ */
+function showContent() {
+  return getContentVisibility();
+}
+
+/**
+ * Loads admin content data when the admin container is shown
+ * This function is called from the frontend when admin content is loaded
+ * @return {Object} Admin-specific data
+ */
+function loadAdminContentData() {
+  return getAdminContent();
+}
+
+/**
+ * Loads user content data when the user container is shown
+ * This function is called from the frontend when user content is loaded
+ * @return {Object} User-specific data
+ */
+function loadUserContentData() {
+  return getUserContent();
+}
+
+/**
+ * Helper function to check if a specific container should be shown
+ * @param {string} containerType - Type of container ('admin', 'user', 'setup', 'unauthorized')
+ * @return {boolean} Whether the container should be shown
+ */
+function shouldShowContainer(containerType) {
+  var contentVisibility = getContentVisibility();
+  
+  switch(containerType.toLowerCase()) {
+    case 'admin':
+      return contentVisibility.visibility.adminContent;
+    case 'user':
+      return contentVisibility.visibility.userContent;
+    case 'setup':
+      return contentVisibility.visibility.setupContainer;
+    case 'unauthorized':
+      return contentVisibility.visibility.unauthorizedContent;
+    case 'analytics':
+      return contentVisibility.visibility.analyticsContent;
+    default:
+      return false;
+  }
 }
 
 /**
@@ -185,44 +235,6 @@ function getUserContent() {
   };
 }
 
-/**
- * Get analytics data for the analytics container
- * This function loads data for the analytics dashboard
- * @return {Object} Analytics data and status
- */
-function getAnalyticsData() {
-  var userStatus = getUserAuthStatus();
-  
-  if (!userStatus.isAuthenticated) {
-    return { success: false, message: "Unauthorized access" };
-  }
-  
-  try {
-    // In a real application, you would fetch this data from your Google Sheet
-    // This is mock data for demonstration purposes
-    const analyticsData = {
-      totalReports: 157,
-      currentQuarter: 42,
-      userEngagement: 78,
-      quarterlyTrends: [
-        { quarter: "Q1", value: 35 },
-        { quarter: "Q2", value: 42 },
-        { quarter: "Q3", value: 28 },
-        { quarter: "Q4", value: 52 }
-      ]
-    };
-    
-    return {
-      success: true,
-      data: analyticsData
-    };
-  } catch (error) {
-    return {
-      success: false,
-      message: "Failed to load analytics data: " + error.message
-    };
-  }
-}
 
 /**
  * Reset the application by clearing all script properties
@@ -245,3 +257,5 @@ function resetApplication() {
     return { success: false, message: "Failed to reset application: " + error.message };
   }
 }
+
+
