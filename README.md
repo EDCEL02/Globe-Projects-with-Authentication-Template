@@ -207,22 +207,7 @@ The application is divided into several HTML container sections:
 ### Initial Setup Process
 
 1. After deployment, open the web app URL in your browser
-2. If you're the first person accessing the application, you'll see the setup form:   ```
-   ┌──────────────────────────────────────────────────┐
-   │ Globe Authentication Template Setup              │
-   ├──────────────────────────────────────────────────┤
-   │                                                  │
-   │  Admin Email: [                            ]     │
-   │                                                  │
-   │  Authorized User Emails:                         │
-   │  [                                         ]     │
-   │                                                  │
-   │  Google Sheets Link:                             │
-   │  [                                         ]     │   │                                                  │
-   │  [           Complete Setup                ]     │
-   │                                                  │
-   └──────────────────────────────────────────────────┘
-   ```
+2. If you're the first person accessing the application, you'll see the setup form:  
 
 3. Fill in the required information:
    - **Admin Email**: Enter your Google account email (e.g., admin@gmail.com)
